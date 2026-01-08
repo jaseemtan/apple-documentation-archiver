@@ -5243,11 +5243,13 @@ try {
 }
 
 const ALLOWED_ORIGIN = "https://developer.apple.com";
-const ALLOWED_PATH_PREFIX = "/library/archive/documentation";
+const ALLOWED_PATH_PREFIXES = [
+    "/library/archive/"
+];
 const STATE_FILE = path.join(OUTPUT_DIR, ".crawl-state.json");
+const FETCH_DELAY_MS = 300;  // change to 0 to disable
 var visitedPages = new Set();
 const downloadedAssets = new Map();
-const FETCH_DELAY_MS = 300;  // change to 0 to disable
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -5277,6 +5279,11 @@ function localPathForUrl(url) {
     if (p.endsWith("/")) p += "index.html";  // Directory, append .index.html
     if (!path.extname(p)) p += ".html";  // No file extension, add .html
     return sanitizePath(path.join(u.hostname, p));
+}
+
+function isHtmlContentType(type) {
+    if (!type) return false;
+    return type.includes("text/html");
 }
 
 // Download assets. Can be js, css, another html page.
@@ -5318,73 +5325,142 @@ async function processPage(url) {
     const canonicalUrl = canonicalize(url);
     if (visitedPages.has(canonicalUrl)) return;
     visitedPages.add(canonicalUrl);
+
     if (FETCH_DELAY_MS > 0) {
         await sleep(FETCH_DELAY_MS);
     }
+
     const res = await fetch(url);
     if (!res.ok) return;
-    
+
     const html = await res.text();
     const dom = new JSDOM(html, { url });
     const document = dom.window.document;
     const baseUrl = new URL(url);
+    const pageLocalPath = path.join(
+        OUTPUT_DIR,
+        localPathForUrl(url)
+    );
 
     async function rewriteAttr(el, attr) {
         const value = el.getAttribute(attr);
         if (!value) return;
+
         try {
             const absolute = new URL(value, baseUrl).href;
-            const local = await downloadAsset(absolute);
-            if (local) el.setAttribute(attr, local);
-        } catch { }
+            const assetLocal = await downloadAsset(absolute);
+            if (!assetLocal) return;
+
+            const assetFullPath = path.join(OUTPUT_DIR, assetLocal);
+            const relative = path.relative(
+                path.dirname(pageLocalPath),
+                assetFullPath
+            );
+            el.setAttribute(attr, relative);
+        } catch(e) {
+            console.log("error: rewriteAttr: %o", e);
+        }
     }
-    
+
+    for (const meta of document.querySelectorAll('meta[name="book-json"][content]')) {
+        const value = meta.getAttribute("content");
+        if (!value) continue;
+
+        try {
+            const absolute = new URL(value, baseUrl).href;
+            const result = await downloadAsset(absolute);
+            if (!result) continue;
+
+            const assetFullPath = path.join(OUTPUT_DIR, result);
+            const relative = path.relative(
+                path.dirname(pageLocalPath),
+                assetFullPath
+            );
+            meta.setAttribute("content", relative);
+
+            // Download sample code zip if present.
+            if (result.endsWith("book.json")) {
+                const jsonText = await fs.readFile(assetFullPath, "utf8");
+                const bookJson = JSON.parse(jsonText);
+                if (bookJson.sampleCode) {
+                    const sampleZipUrl = new URL(
+                        bookJson.sampleCode,
+                        absolute
+                    ).href;
+                    await downloadAsset(sampleZipUrl);
+                }
+            }
+        } catch(e) {
+            console.error("error: book-json: %o", e);
+        }
+    }
+
+
     for (const el of document.querySelectorAll("img[src], script[src], link[href]")) {
         const attr = el.tagName === "LINK" ? "href" : "src";
         await rewriteAttr(el, attr);
     }
+
     for (const a of document.querySelectorAll("a[href]")) {
         const href = a.getAttribute("href");
         if (!href) continue;
+
         try {
-            const absolute = new URL(a.getAttribute("href"), baseUrl);
-            const isAllowed = absolute.origin === ALLOWED_ORIGIN &&
-                absolute.pathname.startsWith(ALLOWED_PATH_PREFIX);
-            if (!isAllowed) {
+            const absolute = new URL(href, baseUrl);
+
+            const isAllowed =
+                absolute.origin === ALLOWED_ORIGIN &&
+                ALLOWED_PATH_PREFIXES.some(prefix =>
+                    absolute.pathname.startsWith(prefix)
+                );
+
+            if (!isAllowed) continue;
+
+            if (FETCH_DELAY_MS > 0) {
+                await sleep(FETCH_DELAY_MS);
+            }
+
+            const res = await fetch(absolute.href, { method: "HEAD" });
+            if (!res.ok) continue;
+
+            const contentType = res.headers.get("content-type");
+
+            // Non HTML content like zip, pdf, etc.
+            if (!isHtmlContentType(contentType)) {
+                const assetLocal = await downloadAsset(absolute.href);
+                if (!assetLocal) continue;
+
+                const assetFullPath = path.join(OUTPUT_DIR, assetLocal);
+                const relative = path.relative(
+                    path.dirname(pageLocalPath),
+                    assetFullPath
+                );
+
+                a.setAttribute("href", relative);
                 continue;
             }
-            // Handle pdf
-            if (absolute.pathname.toLowerCase().endsWith(".pdf")) {
-                const assetPath = await downloadAsset(absolute.href);
-                if (assetPath) {
-                    const relative = path.relative(
-                        path.dirname(pageLocalPath),
-                        path.join(OUTPUT_DIR, assetPath)
-                    );
-                    a.setAttribute("href", relative);
-                }
-                continue;
-            }
+
+            // HTML content
             const canonical = canonicalize(absolute.href);
-            if (visitedPages.has(canonical)) {
-                // Already handled, rewrite the link
-                a.setAttribute("href", localPathForUrl(canonical));
-                continue;
-            }
             a.setAttribute("href", localPathForUrl(canonical));
-            await processPage(absolute.href);
-        } catch { }
+
+            if (!visitedPages.has(canonical)) {
+                await processPage(absolute.href);
+            }
+        } catch {}
     }
-    const localPath = path.join(OUTPUT_DIR, localPathForUrl(url));
-    if (!(await fs.pathExists(localPath))) {  // comment this check to overwrite the file if already present.
-        await fs.ensureDir(path.dirname(localPath));
-        await fs.writeFile(localPath,
+
+    if (!(await fs.pathExists(pageLocalPath))) {
+        await fs.ensureDir(path.dirname(pageLocalPath));
+        await fs.writeFile(
+            pageLocalPath,
             "<!DOCTYPE html>\n" + document.documentElement.outerHTML
         );
         console.log(url);
     } else {
         console.log("Skipping " + url);
     }
+
     await fs.writeJson(STATE_FILE, {
         visitedPages: [...visitedPages]
     });
