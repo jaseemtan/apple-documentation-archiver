@@ -75,11 +75,13 @@ function isHtmlContentType(type) {
 // Download assets. Can be js, css, another html page.
 async function downloadAsset(url) {
     if (downloadedAssets.has(url)) return downloadedAssets.get(url);
+
     if (FETCH_DELAY_MS > 0) {
         await sleep(FETCH_DELAY_MS);
     }
     const res = await fetch(url);
     if (!res.ok) return null;
+    
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const type = res.headers.get("content-type");
@@ -89,6 +91,7 @@ async function downloadAsset(url) {
         path.join(u.hostname, u.pathname)) +
         (path.extname(u.pathname) ? "" : "." + ext);
     const fullPath = path.join(OUTPUT_DIR, filename);
+    
     if (!(await fs.pathExists(fullPath))) {
         await fs.ensureDir(path.dirname(fullPath));
         await fs.writeFile(fullPath, buffer);
@@ -123,10 +126,7 @@ async function processPage(url) {
     const dom = new JSDOM(html, { url });
     const document = dom.window.document;
     const baseUrl = new URL(url);
-    const pageLocalPath = path.join(
-        OUTPUT_DIR,
-        localPathForUrl(url)
-    );
+    const pageLocalPath = path.join(OUTPUT_DIR, localPathForUrl(url));
 
     async function rewriteAttr(el, attr) {
         const value = el.getAttribute(attr);
@@ -279,11 +279,9 @@ var links = new Set();
 document.querySelectorAll("a[href]").forEach(a => {
   try {
     const url = new URL(a.getAttribute("href"), window.location.href);
-    url.hash = ""; // remove fragment
+    url.hash = "";  // remove fragment
     links.add(url.href);
-  } catch (e) {
-    // ignore invalid URLs
-  }
+  } catch () {}
 });
 
 console.log([...links]);
