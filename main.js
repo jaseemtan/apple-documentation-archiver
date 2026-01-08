@@ -267,6 +267,8 @@ async function processPage(url) {
     console.log("Total duration (mins):", durationMinutes.toFixed(2));
 })();
 
+/* Helper scripts */
+
 /*
 
 Get all links from the current page. Execute in dev tools console after the page
@@ -288,3 +290,11 @@ console.log([...links]);
 
 */
 
+/*
+ 
+Copy dynamically appended body contents from the archive's main page. Run this
+in chrome dev console.
+
+copy(document.body.innerHTML.replace(/\n/g, ""))
+
+*/
