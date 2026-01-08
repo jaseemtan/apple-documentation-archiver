@@ -1,0 +1,34 @@
+#!/bin/bash
+
+OUT_DIR="static"
+
+# images
+
+mkdir =p "$OUT_DIR/Images"
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/apple2.png -o "$OUT_DIR"/Images/apple2.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/navigation_background_sprites_2x.png -o "$OUT_DIR"/Images/navigation_background_sprites_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/book_ui_sprites_2x.png -o "$OUT_DIR"/Images/book_ui_sprites_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/closebutton.png -o "$OUT_DIR"/Images/closebutton.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/closebox_2x.png -o "$OUT_DIR"/Images/closebox_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/search.png  -o "$OUT_DIR"/Images/search.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/searchfield_repeat.png -o "$OUT_DIR"/Images/searchfield_repeat.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/task_2x.png  -o "$OUT_DIR"/Images/task_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/tips_2x.png  -o "$OUT_DIR"/Images/tips_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/openbullet.gif -o "$OUT_DIR"/Images/openbullet.gif
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/waitanimation.gif -o "$OUT_DIR"/Images/waitanimation.gif
+mkdir -p "$OUT_DIR/Images/mac"
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/mac/archive_devlib_splash_2x.png -o "$OUT_DIR"/Images/mac/archive_devlib_splash_2x.png
+mkdir -p "$OUT_DIR/Images/pedia"
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/pedia/header_background_2x.png -o "$OUT_DIR"/Images/pedia/header_background_2x.png
+
+# json
+
+curl -L https://developer.apple.com/library/archive/navigation/library.json -o "$OUT_DIR"/library.json
+
+# js
+
+mkdir -p "$OUT_DIR"/scripts
+curl -L https://devimages-cdn.apple.com/assets/scripts/adc_core.js -o "$OUT_DIR"/scripts/adc_core.js
+curl -L https://devimages-cdn.apple.com/assets/scripts/apple_core.js -o "$OUT_DIR"/scripts/apple_core.js
+curl -L https://devimages-cdn.apple.com/assets/scripts/browserdetect.js -o "$OUT_DIR"/scripts/browserdetect.js
+curl -L https://devimages-cdn.apple.com/assets/scripts/search_decorator.js -o "$OUT_DIR"/scripts/search_decorator

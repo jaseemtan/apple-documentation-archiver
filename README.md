@@ -14,6 +14,12 @@ Run:
 
 $ node main.js
 
+Once the download is complete run:
+
+$ ./setup
+
+To update the missing files.
+
 The offline archive will be saved under the offline folder within the project.
 It would be ideal to run the script to download all contents in one go.
 
