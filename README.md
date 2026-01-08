@@ -16,3 +16,6 @@ $ node main.js
 
 The offline archive will be saved under the offline folder within the project.
 It would be ideal to run the script to download all contents in one go.
+
+The offline contents should be served through a local server for it to function
+properly.
