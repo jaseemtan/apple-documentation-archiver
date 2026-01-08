@@ -5395,7 +5395,6 @@ async function processPage(url) {
         }
     }
 
-
     for (const el of document.querySelectorAll("img[src], script[src], link[href]")) {
         const attr = el.tagName === "LINK" ? "href" : "src";
         await rewriteAttr(el, attr);
@@ -5467,13 +5466,19 @@ async function processPage(url) {
 }
 
 (async () => {
+    const startTime = new Date();
+    console.log("Crawl started at:", startTime.toLocaleString());
     await fs.ensureDir(OUTPUT_DIR);
     const queue = [...START_URLS];
     while (queue.length > 0) {
         const url = queue.shift();
         await processPage(url);
     }
+    const endTime = new Date();
+    const durationMinutes = (endTime - startTime) / (1000 * 60);
+    console.log("Crawl finished at:", endTime.toLocaleString());
     console.log("Offline site saved to", OUTPUT_DIR);
+    console.log("Total duration (mins):", durationMinutes.toFixed(2));
 })();
 
 /*
