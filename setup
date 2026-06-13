@@ -49,3 +49,4 @@ cp -R "$OUT_DIR"/Images/* ./offline/developer.apple.com/library/archive/Resource
 cp -R "$OUT_DIR"/scripts/* ./offline/developer.apple.com/library/archive/Resources/1282/JavaScript/
 cp -R "$OUT_DIR"/CSS/* ./offline/developer.apple.com/library/archive/Resources/1282/CSS/
 cp "$OUT_DIR"/library.json ./offline/developer.apple.com/library/archive/navigation/
+cp index.html ./offline/developer.apple.com/library/archive/navigation/
