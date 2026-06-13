@@ -5,6 +5,10 @@ OUT_DIR="static"
 # images
 
 mkdir -p "$OUT_DIR/Images"
+
+
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/apple_developer_header_2x.png -o "$OUT_DIR"/Images/apple_developer_header_2x.png
+curl -L https://developer.apple.com/library/archive/Resources/1282/Images/navigation_ui_sprites_2x.png -o "$OUT_DIR"/Images/navigation_ui_sprites_2x.png
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/apple2.png -o "$OUT_DIR"/Images/apple2.png
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/navigation_background_sprites_2x.png -o "$OUT_DIR"/Images/navigation_background_sprites_2x.png
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/book_ui_sprites_2x.png -o "$OUT_DIR"/Images/book_ui_sprites_2x.png
@@ -32,3 +36,16 @@ curl -L https://devimages-cdn.apple.com/assets/scripts/adc_core.js -o "$OUT_DIR"
 curl -L https://devimages-cdn.apple.com/assets/scripts/apple_core.js -o "$OUT_DIR"/scripts/apple_core.js
 curl -L https://devimages-cdn.apple.com/assets/scripts/browserdetect.js -o "$OUT_DIR"/scripts/browserdetect.js
 curl -L https://devimages-cdn.apple.com/assets/scripts/search_decorator.js -o "$OUT_DIR"/scripts/search_decorator
+
+# css
+
+mkdir -p "$OUT_DIR"/CSS
+curl -L https://developer.apple.com/library/archive/Resources/1282/CSS/reflib_styles.css -o "$OUT_DIR"/CSS/reflib_styles.css
+curl -L http://developer.apple.com/library/archive/Resources/1282/CSS/mac_reflib.css -o "$OUT_DIR"/CSS/mac_reflib.css
+
+# Copy resources
+
+cp -R "$OUT_DIR"/Images/* ./offline/developer.apple.com/library/archive/Resources/1282/Images/
+cp -R "$OUT_DIR"/scripts/* ./offline/developer.apple.com/library/archive/Resources/1282/JavaScript/
+cp -R "$OUT_DIR"/CSS/* ./offline/developer.apple.com/library/archive/Resources/1282/CSS/
+cp "$OUT_DIR"/library.json ./offline/developer.apple.com/library/archive/navigation/

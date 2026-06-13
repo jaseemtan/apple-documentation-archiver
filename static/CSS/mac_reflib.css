@@ -1,0 +1,29 @@
+/*! Copyright (c) 2011 Apple Inc. All Rights Reserved. */
+
+#frontPageTabContainer, #frontPageTabContainer #frontPageTabContents{
+  height: 203px;
+  padding: 0px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#frontPageTabContainer #frontPageTabContents #frontPageTabContent_featured.frontPageTabContent{
+  position: relative;
+  height: 203px;
+  padding: 0;
+  width: auto;
+  border-radius: 4px;
+}
+
+#frontPageTabContainer #frontPageTabContents #frontPageTabContent_featured > img {
+  border-radius: 4px;
+}
+
+#frontPageTabContainer #frontPageTabContents .osx-bg{
+  position: absolute;
+  border-radius: 2px;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background-image: url('../Images/mac/archive_devlib_splash_2x.png');
+  background-repeat: no-repeat;
+  background-size: 772px;
+}
