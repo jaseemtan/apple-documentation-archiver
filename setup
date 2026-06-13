@@ -4,7 +4,7 @@ OUT_DIR="static"
 
 # images
 
-mkdir =p "$OUT_DIR/Images"
+mkdir -p "$OUT_DIR/Images"
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/apple2.png -o "$OUT_DIR"/Images/apple2.png
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/navigation_background_sprites_2x.png -o "$OUT_DIR"/Images/navigation_background_sprites_2x.png
 curl -L https://developer.apple.com/library/archive/Resources/1282/Images/book_ui_sprites_2x.png -o "$OUT_DIR"/Images/book_ui_sprites_2x.png
