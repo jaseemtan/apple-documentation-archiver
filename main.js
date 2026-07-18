@@ -106,7 +106,7 @@ async function downloadAsset(url) {
 // Process the given url.
 // Fetches the html pages, extracts links. If it's assets, download them. If
 // it's html page process the page recursively.
-// All asset path will be updates to point to local.
+// All asset path will be updateed to point to local.
 // Fetched urls are cached to prevent refetch.
 async function processPage(url) {
     if (visitedPages.has(url)) return;  // comment this to fetch irrespective of cache.
