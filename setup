@@ -35,7 +35,7 @@ mkdir -p "$OUT_DIR"/scripts
 curl -L https://devimages-cdn.apple.com/assets/scripts/adc_core.js -o "$OUT_DIR"/scripts/adc_core.js
 curl -L https://devimages-cdn.apple.com/assets/scripts/apple_core.js -o "$OUT_DIR"/scripts/apple_core.js
 curl -L https://devimages-cdn.apple.com/assets/scripts/browserdetect.js -o "$OUT_DIR"/scripts/browserdetect.js
-curl -L https://devimages-cdn.apple.com/assets/scripts/search_decorator.js -o "$OUT_DIR"/scripts/search_decorator
+curl -L https://devimages-cdn.apple.com/assets/scripts/search_decorator.js -o "$OUT_DIR"/scripts/search_decorator.js
 
 # css
 
